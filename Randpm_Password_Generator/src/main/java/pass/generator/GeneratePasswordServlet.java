@@ -116,10 +116,13 @@ public class GeneratePasswordServlet extends HttpServlet {
     	String user = "root";
     	String Pass = "Payal@123";
     	
+    	Connection conn = null;
+    	PreparedStatement stmt = null;
+    	
     	try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
-			Connection conn = DriverManager.getConnection(url , user , Pass);
-			PreparedStatement stmt = conn.prepareStatement("INSERT INTO Passwords (username, password) VALUES (?, ?)");
+			conn = DriverManager.getConnection(url , user , Pass);
+			stmt = conn.prepareStatement("INSERT INTO Passwords (username, password) VALUES (?, ?)");
 			stmt.setString(1, username);
             stmt.setString(2, password);
             stmt.executeUpdate();
@@ -133,7 +136,28 @@ public class GeneratePasswordServlet extends HttpServlet {
 		}
     	
     	finally {
+    		close(conn, stmt);
 			
 		}
     }
+
+	private void close(Connection conn, PreparedStatement stmt) {
+		try {
+			if(stmt != null) {    				
+				stmt.close();
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		try {
+			if(conn != null) {
+				conn.close();
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 }
